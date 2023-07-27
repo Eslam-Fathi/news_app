@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import 'Data/Cubit/AllNewsCubit/all_news_cubit.dart';
 import 'Screens/home_screen.dart';
-import 'Screens/news_screen.dart';
+// import 'Screens/news_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,13 +20,20 @@ class MyApp extends StatelessWidget {
       minTextAdapt: true,
       splitScreenMode: true,
       builder: (context, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp),
+        return MultiBlocProvider(
+          providers: [
+            BlocProvider(
+              create: (context) => AllNewsCubit(),
+            ),
+          ],
+          child: MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              primarySwatch: Colors.blue,
+              textTheme: Typography.englishLike2018.apply(fontSizeFactor: 1.sp),
+            ),
+            home: const HomeScreen(),
           ),
-          home: HomeScreen(),
         );
       },
     );

@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:news_app/Shared/news_container.dart';
+import '../Data/Cubit/AllNewsCubit/all_news_cubit.dart';
+import 'news_screen.dart';
 
 class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     final screenUtil = ScreenUtil();
@@ -59,10 +64,13 @@ class HomeScreen extends StatelessWidget {
                             ),
                           ),
                           child: Center(
-                            child: SvgPicture.asset(
-                              'Assets/images/note_belle.svg',
-                              width: screenUtil.setWidth(22),
-                              height: screenUtil.setWidth(24),
+                            child: InkWell(
+                              onTap: () {},
+                              child: SvgPicture.asset(
+                                'Assets/images/note_belle.svg',
+                                width: screenUtil.setWidth(22),
+                                height: screenUtil.setWidth(24),
+                              ),
                             ),
                           ),
                         ),
@@ -88,7 +96,12 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const Spacer(),
                   TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const NewsScreen()));
+                    },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(
@@ -100,7 +113,7 @@ class HomeScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          'See All',
+                          'See all',
                           style: TextStyle(
                             color: const Color(0xFF0080FF),
                             fontSize: screenUtil.setSp(14),
@@ -117,13 +130,53 @@ class HomeScreen extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
-              child: ListView.builder(
-                itemCount: 5,
-                itemBuilder: (context, index) {
-                  return NewsCard();
-                },
-              ),
+            Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: ElevatedButton(
+                    onPressed: () {
+                      context.read<AllNewsCubit>().getAllNews();
+                    },
+                    child: const Text("Get News"))),
+            BlocBuilder<AllNewsCubit, AllNewsState>(
+              builder: (context, state) {
+                if (state is AllNewsInitial) {
+                  return const Center(
+                    child: Text("Please press to refresh",
+                        style: TextStyle(color: Colors.black)),
+                  );
+                } else if (state is AllNewsLoading) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      backgroundColor: Colors.blueGrey,
+                      color: Colors.blue,
+                    ),
+                  );
+                } else if (state is AllNewsSuccess) {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: state.myResponse.articles.length,
+                      itemBuilder: (context, index) {
+                        return NewsCard(
+                          title: state.myResponse.articles[index].title ??
+                              "not specified",
+                          author: state.myResponse.articles[index].author ??
+                              "not specified",
+                          description:
+                              state.myResponse.articles[index].description ??
+                                  "not specified",
+                          assetPaths: state
+                                  .myResponse.articles[index].urlToImage ??
+                              "https://th.bing.com/th/id/OIP.ZIa3xzj07l3T0PdN67z1iwHaHa?pid=ImgDet&rs=1",
+                        );
+                      },
+                    ),
+                  );
+                } else {
+                  return const Center(
+                    child: Text('Error'),
+                  );
+                }
+              },
             ),
           ],
         ),

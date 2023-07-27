@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import '../Screens/news_screen.dart';
 
 class NewsCard extends StatelessWidget {
+  final String? author;
+  final String? title;
+  final String? description;
+  final String assetPaths;
+  const NewsCard(
+      {super.key,
+      required this.author,
+      required this.title,
+      required this.description,
+      required this.assetPaths});
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -10,10 +19,7 @@ class NewsCard extends StatelessWidget {
     final screenUtil = ScreenUtil();
     return InkWell(
       onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NewsScreen()),
-        );
+        print('Image container tapped!');
       },
       child: Container(
         width: screenWidth < 600 ? screenWidth * 0.9 : screenUtil.setWidth(345),
@@ -29,8 +35,8 @@ class NewsCard extends StatelessWidget {
             Positioned.fill(
               child: Container(
                 decoration: BoxDecoration(
-                  image: const DecorationImage(
-                    image: AssetImage('Assets/images/test.png'),
+                  image: DecorationImage(
+                    image: NetworkImage(assetPaths),
                     fit: BoxFit.cover,
                   ),
                   borderRadius: BorderRadius.circular(
@@ -65,7 +71,7 @@ class NewsCard extends StatelessWidget {
                     children: [
                       const SizedBox(height: 100),
                       Text(
-                        'by Ryan Browne',
+                        author!,
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: screenUtil.setSp(10),
@@ -77,7 +83,7 @@ class NewsCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
                         child: Text(
-                          'Crypto investors should be prepared to lose all their money, BOE governor says',
+                          title!,
                           style: TextStyle(
                             color: Colors.white,
                             fontSize: screenUtil.setSp(16),
@@ -92,7 +98,7 @@ class NewsCard extends StatelessWidget {
                       Padding(
                         padding: const EdgeInsets.only(right: 20),
                         child: Text(
-                          '“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”',
+                          description!,
                           textAlign: TextAlign.justify,
                           style: TextStyle(
                             color: Colors.white,
@@ -100,8 +106,8 @@ class NewsCard extends StatelessWidget {
                             fontFamily: 'Nunito',
                             fontWeight: FontWeight.w400,
                           ),
-                          maxLines: null,
-                          overflow: TextOverflow.clip,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
